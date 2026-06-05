@@ -1,2 +1,2 @@
 # amallocal
-Local/bare metal ollama setup for codding, agenting and chattig. With a WebUI
+Local/bare metal LLM setup for codding, agenting and chatting. With a WebUI
