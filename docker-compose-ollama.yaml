@@ -1,10 +1,17 @@
 services:
-    llamacpp:
-        image: ghcr.io/ggml-org/llama.cpp:server
-        container_name: llamacpp
-
+    ollama:
+        image: ollama/ollama:latest
+        container_name: ollama
+        restart: always
+        user: "1012:1012"
+        ports:
+            - "127.0.0.1:11434:11434"
+        environment:
+            - OLLAMA_NUM_PARALLEL=${OLLAMA_NUM_PARALLEL}
+            - OLLAMA_NUMA=true
+            - HOME=/tmp
         volumes:
-          - llamacpp_volume:/models
+            - ollama_vol:/tmp/.ollama
 
     open-webui:
         image: ghcr.io/open-webui/open-webui:main
@@ -16,19 +23,19 @@ services:
             - OLLAMA_BASE_URL=http://ollama:11434
             - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
         volumes:
-            - webui_volume:/app/backend/data
+            - webui_vol:/app/backend/data
         depends_on:
-            - llamacpp
+            - ollama
 
 volumes:
-  llamacpp_volume:
+  ollama_vol:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './llama-cpp/models'
+      device: './ollama-models'
 
-  webui_volume:
+  webui_vol:
     driver: local
     driver_opts:
       type: 'none'
