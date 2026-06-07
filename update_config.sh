@@ -1,5 +1,9 @@
 #!/bin/bash
 
+get_rand_sha256() {
+    echo $(head -n 128 /dev/random | sha256sum | cut -d' ' -f1)
+}
+
 # check for the existing config
 FRESH_SETUP=false
 if [ ! -f '.env' ]; then
@@ -8,11 +12,20 @@ if [ ! -f '.env' ]; then
     FRESH_SETUP=true
 fi
 
-# update key
-if [ $FRESH_SETUP == "true" ]; then
-    echo "Update WebUI secret key $RND_KEY"
-    
+# CHECK KEY
+CURRENT_WUI_KEY=$(grep 'WEBUI_SECRET_KEY' .env)
+
+# no key
+if [ -z "$CURRENT_WUI_KEY" ]; then
+    RND_KEY=$(get_rand_sha256)
+    echo "No WebUI secret key $RND_KEY"
+
     RND_KEY=$(head -n 128 /dev/random | sha256sum | cut -d' ' -f1);
+    echo "WEBUI_SECRET_KEY=$RND_KEY" >> .env
+elif [ -z "${CURRENT_WUI_KEY:17}" ]; then
+    RND_KEY=$(get_rand_sha256)
+    echo "WebUI secret key is empty, setting to $RND_KEY"
+
     sed -i -e "s/WEBUI_SECRET_KEY=.*/WEBUI_SECRET_KEY=$RND_KEY/g" ".env"
 fi
 
@@ -31,9 +44,9 @@ if [[ $TARGET_CORES -lt 1 ]]; then
     echo "Error calculating cores to use, expected positive number, received: '$TARGET_CORES'"
     exit 1;
 fi
-echo "Using $TARGET_CORES for ollama..."
+echo "Using $TARGET_CORES for llammas..."
 
-sed -i -e "s/OLLAMA_NUM_PARALLEL=.*/OLLAMA_NUM_PARALLEL=$TARGET_CORES/g" ".env"
+sed -i -e "s/LLAMA_CPU_CORES=.*/LLAMA_CPU_CORES=$TARGET_CORES/g" ".env"
 echo "Config updated"
 
 
