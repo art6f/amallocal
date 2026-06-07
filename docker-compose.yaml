@@ -1,7 +1,17 @@
 services:
-    llamacpp:
+    llamacpp-server:
         image: ghcr.io/ggml-org/llama.cpp:server
-        container_name: llamacpp
+        #build:
+            #context: llama-cpp/docker
+            #dockerfile: Dockerfile
+        container_name: llamacpp-server
+        environment:
+            - HF_TOKEN=${HUGFACE_TOKEN}
+            - LLAMA_CACHE=/models/.cache
+            - LLAMA_ARG_HF_REPO=${HUGFACE_REPO:-ggml-org/Qwen2.5-Coder-7B-Q8_0-GGUF}
+            - LLAMA_ARG_HF_FILE=${HUGFACE_FILE:-qwen2.5-coder-7b-q8_0.gguf}
+            - LLAMA_ARG_CTX_SIZE=${CONTEXT_SIZE:-0}
+            - LLAMA_ARG_LOG_VERBOSITY=${LOG_LEVEL:-3}
 
         volumes:
           - llamacpp_volume:/models
@@ -13,12 +23,13 @@ services:
         ports:
             - "127.0.0.1:3388:8080"
         environment:
-            - OLLAMA_BASE_URL=http://ollama:11434
+            - ENABLE_OLLAMA_API=false
+            - OPENAI_API_BASE_URL=http://llamacpp-server:8080/v1
             - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
         volumes:
             - webui_volume:/app/backend/data
         depends_on:
-            - llamacpp
+            - llamacpp-server
 
 volumes:
   llamacpp_volume:

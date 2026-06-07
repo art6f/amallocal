@@ -1,7 +1,11 @@
 .env
+.vscode
+
+llama-cpp/models/*
+!llama-cpp/models/.gitignore
 
 ollama-models/*
 !ollama-models/.gitignore
 
-open-webui/*
-!open-webui/.gitignore
+open-webui/data/*
+!open-webui/data/.gitignore
