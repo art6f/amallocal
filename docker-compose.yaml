@@ -21,6 +21,10 @@ services:
             - LLAMA_ARG_BATCH=${LLAMA_LOGICAL_BATCH}
             - LLAMA_ARG_UBATCH=${LLAMA_PHYSICAL_BATCH}
 
+            #- LLAMA_ARG_REPEAT_PENALTY=1.1
+            #- LLAMA_ARG_REPEAT_LAST_N=64
+            - LLAMA_ARG_CHAT_TEMPLATE=chatml
+
         volumes:
           - llamacpp_volume:/models
         
