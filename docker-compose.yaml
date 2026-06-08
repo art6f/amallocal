@@ -32,7 +32,7 @@ services:
             start_period: 10s
 
     open-webui:
-        image: ghcr.io/open-webui/open-webui:main
+        image: ghcr.io/open-webui/open-webui:v0.9.6
         container_name: open-webui
         restart: always
         ports:
@@ -44,8 +44,11 @@ services:
             - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
         
             - DEFAULT_MODEL=${LLAMA_MODEL_ALIAS}
-            - USER_PERMISSIONS_CHAT_MODEL_SELECT=false
             - SHOW_ADMIN_DETAILS=false
+
+            # integration
+            - ENABLE_API_KEYS=true
+
         volumes:
             - webui_volume:/app/backend/data
         
